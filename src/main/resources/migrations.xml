@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="cb">
+        <createTable tableName="user">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="fullName" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(10)" defaultValue="GUEST">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="point" type="int" defaultValue="0">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createTable tableName="movie">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="year" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="double" />
+            <column name="description" type="varchar" />
+            <column name="url" type="varchar" />
+            <column name="type" type="varchar(3)" defaultValue="NEW">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createTable tableName="usermovie">
+        	<column name="iduser" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="idmovie" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="days" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <addForeignKeyConstraint baseColumnNames="iduser"
+                             baseTableName="usermovie"
+                             constraintName="fk_user_id"
+                             referencedColumnNames="id"
+                             referencedTableName="user"/>
+                             
+        <addForeignKeyConstraint baseColumnNames="idmovie"
+                             baseTableName="usermovie"
+                             constraintName="fk_movie_id"
+                             referencedColumnNames="id"
+                             referencedTableName="movie"/>
+        <loadData
+            file="movie.csv"
+            tableName="movie"/>
+            
+        <loadData
+            file="user.csv"
+            tableName="user"/>
+        
+    </changeSet>
+    
+</databaseChangeLog>

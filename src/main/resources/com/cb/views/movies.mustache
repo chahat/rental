@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  {{> head}}
+
+  <body>
+
+	{{> header}}
+
+    <main role="main">
+	
+      <div class="album text-muted">
+        <div class="container">
+
+          <div class="row">
+          	{{#movies}}
+            <div class="card">
+	        	<div class="img-wrapper">
+					<img src="https://images-na.ssl-images-amazon.com/images/M/{{url}}" data-src="holder.js/100px280?theme=thumb" alt="Card image cap">    
+				    <div class="img-overlay">
+				      <button class="btn btn-md btn-success">{{type}}</button>
+				    </div>
+				</div>
+              <h5 class="text-truncate">{{name}}<h5>
+              <h6>{{year}}<h6>
+              <p class="card-text text-truncate">{{description}}</p>
+              <p><a class="btn btn-primary" href="#" role="button">Rent</a></p>
+            </div>
+            {{/movies}}
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    {{> footer}}
+    <script>
+      Holder.addTheme('thumb', {
+        bg: '#55595c',
+        fg: '#eceeef',
+        text: ''
+      });
+    </script>
+  </body>
+</html>

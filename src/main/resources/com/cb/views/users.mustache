@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  {{> head}}
+
+  <body>
+
+	{{> header}}
+
+    <main role="main">
+    	<div class="container">
+    		<h2>Users</h2>
+		      <div class="table-responsive-sm">
+		        <table class="table table-striped">
+		          <thead>
+		            <tr>
+		              <th>Name</th>
+		              <th>Role</th>
+		              <th>Point</th>
+		              <td>#</td>
+		            </tr>
+		          </thead>
+		          <tbody>
+		          {{#users}}
+		            <tr>
+		              <td class="text-truncate"><a href="/user/{{id}}">{{fullName}}</a></td>
+		              <td>{{role}}</td>
+		              <td>{{point}}</td>
+		              <td><form class="userForm" action="/user/{{id}}" method="delete"><button type="button" onclick="submitform(this)" class="btn btn-danger btn-md">Delete</button></form></td>
+		            </tr>
+		          {{/users}}
+		          	<tr>
+		              <td></td><td></td><td></td>
+		              <td><form action ="/user/0" ><button type="submit" class="btn btn-primary  btn-md">New user</button></form></td>
+		            </tr>
+		          </tbody>
+		        </table>
+		      </div>
+    	</div>
+    </main>
+
+    {{> footer}}
+    <script type="text/javascript">
+    	function submitform(elem){
+    		var type = $(elem).parent('.userForm').attr('method');
+    		var url = $(elem).parent('.userForm').attr('action');
+    		$.ajax({
+			  type: type,
+			  url:  url,
+			  success: function(){location.reload()}
+			});
+    	}
+    </script>
+  </body>
+</html>

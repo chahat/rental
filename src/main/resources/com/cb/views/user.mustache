@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  {{> head}}
+  <link href="/assets/css/bootstrap-datepicker.min.css" rel="stylesheet">
+
+  <body>
+
+	{{> header}}
+
+    <main role="main">
+    	<div class="container">
+    		<h2>User</h2>
+            <form id="userForm" action="/user" method="post"  role="form" data-toggle="validator" enctype="application/json">
+                <div class="form-group row">
+                	{{#user.id}}
+                		<input type="hidden" name="id" value="{{user.id}}">
+                	{{/user.id}}
+                    <label for="name" class="control-label col-sm-2">Name:</label>
+                    <input type="text" name="fullName" id="name" class="form-control col-sm-10" value="{{user.fullName}}" required="true"/>                                   
+				</div>
+				<div class="form-group row">
+					<label for="role" class="control-label col-sm-2">Role:</label>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" name="role" type="radio" value="GUEST" {{#user.guest}}checked{{/user.guest}}>
+					  <label class="form-check-label">GUEST</label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" name="role" type="radio" value="ADMIN" {{#user.admin}}checked{{/user.admin}}>
+					  <label class="form-check-label">ADMIN</label>
+					</div>
+				</div>
+				<div class="form-group row">
+                    <label class="control-label col-sm-2">Point:</label>
+                    <input type="text" class="form-control col-sm-10" value="{{user.point}}" readonly/>                                   
+				</div>
+			    <div class="table-responsive-sm">
+			        <table class="table table-striped">
+			          <thead>
+			            <tr>
+			              <th>Movie</th>
+			              <th>Rented on</th>
+			              <th>For days</th>
+			              <th>Price</th>
+			              <th>Delay Fee</th>
+			              <td>#</td>
+			            </tr>
+			          </thead>
+			          <tbody>
+			          {{#user.userMovies}}
+			            <tr class="userMovieRow">
+			              <input class="releaseAction" type="hidden" value="/user/{{user.id}}/{{movie.id}}" />
+			              <input class="exceeded" type="hidden" value="{{daysDiff}}"/>
+			              <td class="text-truncate">{{movie.name}}</td>
+			              <td class="date">{{dateString}}</td>
+			              <td><input type="text" class="days" name="days" value="{{days}}" required="true"/></td>
+			              <td>{{price}}</td>
+			              <td class="delayPrice">{{delayPrice}}</td>
+			              <td>
+			              	<button type="button" class="btn btn-success" onclick="showModal(this)">Release</button>
+			              	  </td>
+			            </tr>
+			          {{/user.userMovies}}
+			          	{{#user.id}}
+			          	<tr>
+			          		<td><input id="movieAutocomplete" class="typeahead" type="text" required="true"></td>
+					    	<td><input id="datePicker" data-provide="datepicker" data-date-format="dd/mm/yyyy" required="true"></td>
+					    	<td><input id="days" type="text" required="true"></td>
+					    	<td></td><td></td>
+					    	<td><button type="button" class="btn btn-primary  btn-md" onclick="createMovie(this)">Rent Out Movie</button></td>
+			          	</tr>
+			          	{{/user.id}}
+			          </tbody>
+			        </table>
+			    </div>
+            </form>
+            <form id="createMovieForm" action ="/user/{{user.id}}" method="post">
+		    	<input name="id" type="hidden">
+		    	<input name="dateString" type="hidden">
+		    	<input name="days" type="hidden">
+	    	</form>
+            <button type="button" class="btn btn-primary  btn-md" onclick="submitUserform('#userForm')">Save</button>
+        </div>
+    </main>
+    
+    <!-- Modal -->
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Receive movie</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	      	<form>
+	      		<div class="form-group row">
+	      			<label class="col-sm-6 col-form-label">Rented on</label>
+	      			<p><b id="modalRentedOn"></b></p>
+	      		</div>
+	      		<div class="form-group row">
+	      			<label class="col-sm-6 col-form-label">Rented for days</label>
+	      			<p><b id="modalRentedFor"></b></p>
+	      		</div>
+	      		<div class="form-group row">
+	      			<label class="col-sm-6 col-form-label">Days exceeded</label>
+	      			<p><b id="modalDaysExceed"></b></p>
+	      		</div>
+	      		<div class="form-group row">
+	      			<label class="col-sm-6 col-form-label">Dues</label>
+	      			<p><b id="modalDues"></b></p>
+	      		</div>
+	      	</form>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	        <form id="userMovieForm" action="" method="delete">
+		        <button type="button" onclick="submitform(this)" class="btn btn-primary btn-md">Release</button>
+	        </form>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+
+    {{> footer}}
+    <script src="/assets/js/bootstrap-typeahead.min.js"></script>
+    <script src="/assets/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript">
+    	
+    	function createMovie(elem)
+    	{
+    		var movieId = movieIds[$( '#movieAutocomplete' ).val()];
+    		var date = $( '#datePicker' ).val();
+    		var days = $('#days').val();
+    		$('#createMovieForm input[name="id"]').val(movieId);
+    		$('#createMovieForm input[name="dateString"]').val(date);
+    		$('#createMovieForm input[name="days"]').val(days);
+    		submitUserform('#createMovieForm');
+    	}
+    	
+    	$.ajax({
+		  url:  "/",
+		  success: initAutoComplete,
+		  dataType : "json",
+    	  contentType: "application/json; charset=utf-8",
+		});
+		
+    	var movieNames = new Array();
+		var movieIds = new Object();
+    	function initAutoComplete(movie)
+    	{
+    		var autocompleteData = movie['movies']; 
+    		$.each( autocompleteData, function ( index, movie )
+            {
+                movieNames.push( movie.name );
+                movieIds[movie.name] = movie.id;
+            } );
+    		$('input.typeahead').typeahead({ source: movieNames});
+    	}
+    	
+        var exceeded, date, days, delayPrice, releaseAction;
+    	function showModal(elem) {
+    		exceeded = $(elem).parents('tr.userMovieRow').find('.exceeded').val();
+    		date = $(elem).parents('tr.userMovieRow').find('.date').html();
+    		days = $(elem).parents('tr.userMovieRow').find('.days').val();
+    		delayPrice = $(elem).parents('tr.userMovieRow').find('.delayPrice').html();
+    		releaseAction = $(elem).parents('tr.userMovieRow').find('.releaseAction').val();
+		  	$('#exampleModal').modal('show');
+    	}
+	    
+	    $('#exampleModal').on('show.bs.modal', function (e) {
+		  	$('#exampleModal #modalRentedOn').html(date);
+		  	$('#exampleModal #modalRentedFor').html(days);
+		  	$('#exampleModal #modalDaysExceed').html(exceeded);
+		  	$('#exampleModal #modalDues').html(delayPrice);
+		  	$('#exampleModal #userMovieForm').attr('action', releaseAction);
+		});
+
+    	function submitUserform(id){
+    		var type = $(id).attr('method');
+    		var url = $(id).attr('action');
+    		$.ajax({
+			  type: type,
+			  url:  url,
+			  data: JSON.stringify($(id).serializeObject()),
+			  success: function(user){window.location = "/user/"+user.id},
+			  dataType: "json",
+			  contentType : "application/json"
+			});
+    	}
+    	
+    	function submitform(elem){
+    		var type = $(elem).parent('#userMovieForm').attr('method');
+    		var url = $(elem).parent('#userMovieForm').attr('action');
+    		$.ajax({
+			  type: type,
+			  url:  url,
+			  success: function(){location.reload()}
+			});
+    	}
+    </script>
+  </body>
+</html>	

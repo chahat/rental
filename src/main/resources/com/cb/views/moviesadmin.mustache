@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  {{> head}}
+
+  <body>
+
+	{{> header}}
+
+    <main role="main">
+    	<div class="container">
+    		<h2>Movies</h2>
+    		<div class="table-responsive-sm">
+		        <table class="table table-striped">
+		          <thead>
+		            <tr>
+		              <th>Name</th>
+		              <th>Year</th>
+		              <th>Type</th>
+		              <td>#</td>
+		            </tr>
+		          </thead>
+		          <tbody>
+		          {{#movies}}
+		            <tr>
+		              <td><a href="/movie/{{id}}">{{name}}</a></td>
+		              <td>{{year}}</td>
+		              <td>{{type}}</td>
+		              <td><form class="movieForm" action="/movie/{{id}}" method="delete"><button type="button" onclick="submitform(this)" class="btn btn-danger btn-md">Delete</button></form></td>
+		            </tr>
+		          {{/movies}}
+		          	<tr>
+		          		<td></td><td></td><td></td>
+		          		<td><form action ="/movie/0" ><button type="submit" class="btn btn-primary  btn-md">New movie</button></form></td>
+		          	</tr>
+		          </tbody>
+		        </table>
+		      </div>
+    	</div>
+    </main>
+
+    {{> footer}}
+    <script type="text/javascript">
+    	function submitform(elem){
+    		var type = $(elem).parent('.movieForm').attr('method');
+    		var url = $(elem).parent('.movieForm').attr('action');
+    		$.ajax({
+			  type: type,
+			  url:  url,
+			  success: function(){location.reload()}
+			});
+    	}
+    </script>
+  </body>
+</html>

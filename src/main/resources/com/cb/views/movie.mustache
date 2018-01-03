@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  {{> head}}
+
+  <body>
+
+	{{> header}}
+
+    <main role="main">
+    	<div class="container">
+            <form id="movieForm" action="/movie" method="post"  role="form" data-toggle="validator" enctype="application/json">
+                <h2>Movie</h2>
+                <div class="form-group col-xs-4">
+                	{{#movie.id}}
+                		<input type="hidden" name="id" value="{{movie.id}}">
+                	{{/movie.id}}
+                    <label for="name" class="control-label col-xs-4">Name:</label>
+                    <input type="text" name="name" id="name" class="form-control" value="{{movie.name}}" required="true"/>                                   
+
+                    <label for="description" class="control-label col-xs-4">Description:</label>                   
+                    <input type="text" name="description" id="description" class="form-control" value="{{movie.description}}" /> 
+
+                    <label for="url" class="control-label col-xs-4">Url</label>                 
+                    <input type="text" name="url" id="url" class="form-control" value="{{movie.url}}" required="true"/>
+
+                    <label for="role" class="control-label col-xs-4">Year:</label>                    
+                    <input type="text" name="year" id="year" class="form-control" value="{{movie.year}}" required="true"/> 
+                    
+                    <div class="form-check form-check-inline">
+					  <input class="form-check-input" name="type" type="radio" value="NEW" {{#movie.new}}checked{{/movie.new}}>
+					  <label class="form-check-label">NEW</label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" name="type" type="radio" value="REG" {{#movie.reg}}checked{{/movie.reg}}>
+					  <label class="form-check-label">REG</label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" name="type" type="radio" value="OLD" {{#movie.old}}checked{{/movie.old}}>
+					  <label class="form-check-label">OLD</label>
+					</div>
+
+
+                    <br></br>
+                    <button type="button" class="btn btn-primary  btn-md" onclick="submitform()">Save</button> 
+                </div>                                                      
+            </form>
+        </div>
+    </main>
+
+    {{> footer}}
+    <script type="text/javascript">
+    	function submitform(){
+    		var type = $('#movieForm').attr('method');
+    		var url = $('#movieForm').attr('action');
+    		$.ajax({
+			  type: type,
+			  url:  url,
+			  data: JSON.stringify($("#movieForm").serializeObject()),
+			  success: function(movie){window.location = url+"/"+movie.id},
+			  dataType: "json",
+			  contentType : "application/json"
+			});
+    	}
+    </script>
+  </body>
+</html>	
